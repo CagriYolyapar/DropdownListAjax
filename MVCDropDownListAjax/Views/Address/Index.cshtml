@@ -1,0 +1,112 @@
+﻿@model IndexVM
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Adres</h2>
+
+<h4 style="color:red">@TempData["eksikVeri"]</h4>
+
+<div>
+    @using (Html.BeginForm("AddAddress","Address",FormMethod.Post))
+    {
+        <div>
+          İsim:  @Html.TextBoxFor(x=>x.Address.Name,new { @class="form-control"})
+        </div>
+
+        <div>
+         Soyisim:   @Html.TextBoxFor(x=>x.Address.LastName,new { @class="form-control"})
+        </div>
+        <div>
+         Şehir seciniz: @Html.DropDownListFor(x=>x.City.StateID,new SelectList(Model.States,"ID","Name"),"Lutfen şehir seciniz",new { @class="form-control"})
+        </div>
+
+        <div>
+            İlçe seciniz: <select   id="District_CityID" class="form-control"> </select>
+        </div>
+
+        <div>
+            Mahalle seciniz: <select name="Address.DistrictID" id="Address_DistrictID" class="form-control"> </select>
+        </div>
+
+        <div>
+            Adres giriniz : @Html.TextAreaFor(x=>x.Address.Description,new { @class="form-control"})
+        </div>
+
+        <div>
+            <button class="btn btn-primary">Ekle</button>
+        </div>
+    }
+</div>
+
+
+<div>
+    <ul>
+        @foreach (Address item in Model.Addresses)
+        {
+            <li>@item.District.City.State.Name  -  @item.District.City.Name - @item.District.Name - @item.Name @item.LastName @item.Description       </li>
+
+        }
+    </ul>
+   
+</div>
+
+
+
+
+
+
+<script>
+    $(function(){
+        $("#City_StateID").change(function () {
+            var ddlStates = $(this);
+            var stateID = ddlStates.val();
+
+            if (stateID != "" || stateID != "-1") {
+                $("#District_CityID option").remove();
+                $.ajax({
+                    method: "Get",
+                    url: "http://localhost:54163/District/GetCityByState/" + stateID,
+                }).done(function (result) {
+                    $.each(result, function (key, data) {
+                        $("#District_CityID").append('<option value="' + data.ID + '" > ' + data.Name + '  </option>');
+                    })
+                    $("#District_CityID").change();
+                   
+                })
+            }
+            else {
+                $("#District_CityID option").not(":first").remove();
+            }
+        })
+
+        $("#District_CityID").change(function () {
+            
+            var ddlCities = $(this);
+            var cityID = ddlCities.val();
+
+            if (cityID != "" || cityID != "-1") {
+                $("#Address_DistrictID option").remove();
+                $.ajax({
+                    method: "Get",
+                    url: "http://localhost:54163/Address/GetDistrictByCity/" + cityID,
+                }).done(function (result) {
+
+                    $.each(result, function (key, data) {
+                        $("#Address_DistrictID").append('<option value="' + data.ID + '">' + data.Name + ' </option>');
+                    })
+
+                   
+                })
+            }
+            else {
+                $("#Address_DistrictID option").not(":first").remove();
+            }
+        })
+
+
+       
+
+
+    })
+</script>

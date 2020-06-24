@@ -1,0 +1,30 @@
+﻿@model IndexVM
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Şehir</h2>
+<h3 style="color:red">@TempData["veriYok"]</h3>
+<h3 style="color:red">@TempData["eksikBilgi"]</h3>
+@using (Html.BeginForm("AddState","StateC",FormMethod.Post))
+{
+    
+    <div>
+      Sehir ismi:  @Html.TextBoxFor(x=>x.State.Name)
+    </div>
+    <div>
+        <button class="btn btn-primary">Ekle</button>
+    </div>
+}
+
+<br /> <br />
+<div>
+    <ul>
+
+        @foreach (State item in Model.States)
+        {
+            <li>@item.Name</li>
+        }
+    </ul>
+   
+</div>

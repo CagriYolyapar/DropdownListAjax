@@ -1,0 +1,62 @@
+﻿@model IndexVM
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Mahalle</h2>
+<h3 style="color:red">@TempData["veriYok"]      </h3>
+
+<h3 style="color:red">@TempData["eksikBilgi"]</h3>
+
+@using (Html.BeginForm("AddDistrict", "District", FormMethod.Post))
+{
+    <div>
+        Sehir seciniz:  @Html.DropDownListFor(x => x.City.StateID, new SelectList(Model.States, "ID", "Name"), "Lutfen şehir seciniz")
+    </div>
+    <div>
+        İlçe seciniz: @Html.DropDownListFor(x => x.District.CityID, new SelectList(Model.Cities, "ID", "Name"), "Lutfen ilçe seciniz")
+    </div>
+    <div>
+        İlçe ismi : @Html.TextBoxFor(x => x.District.Name)
+    </div>
+    <div>
+        <button class="btn btn-primary">Ekle</button>
+    </div>
+}
+
+
+
+<div>
+    <ul>
+        @foreach (District item in Model.Districts)
+        {
+            <li>@item.City.State.Name -    @item.City.Name  -    @item.Name</li>
+        }
+    </ul>
+</div>
+
+
+<script>
+    $(function(){
+        $("#City_StateID").change(function () {
+            var ddlStates = $(this);
+            var stateID = ddlStates.val();
+
+            if (stateID != "" || stateID != "-1") {
+                $("#District_CityID option").remove();
+                $.ajax({
+                    method: "Get",
+                    url: "http://localhost:54163/District/GetCityByState/" + stateID,
+                }).done(function (result) {
+                    $.each(result, function (key, data) {
+                        $("#District_CityID").append('<option value="' + data.ID + '" > ' + data.Name + '  </option>')
+                    })
+                })
+            }
+            else {
+                $("#District_CityID option").not(":first").remove();
+            }
+        })
+    
+    })
+</script>
