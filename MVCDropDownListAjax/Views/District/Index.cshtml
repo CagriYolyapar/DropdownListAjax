@@ -11,13 +11,15 @@
 @using (Html.BeginForm("AddDistrict", "District", FormMethod.Post))
 {
     <div>
-        Sehir seciniz:  @Html.DropDownListFor(x => x.City.StateID, new SelectList(Model.States, "ID", "Name"), "Lutfen şehir seciniz")
+        Sehir seciniz:  @Html.DropDownListFor(x => x.City.StateID, new SelectList(Model.States, "ID", "Name"), "Lutfen şehir seciniz",new { @class="form-control"})
     </div>
     <div>
-        İlçe seciniz: @Html.DropDownListFor(x => x.District.CityID, new SelectList(Model.Cities, "ID", "Name"), "Lutfen ilçe seciniz")
+        İlçe seciniz:
+        <select id="District_CityID" name="District.CityID" class="form-control" disabled><option>Lütfen ilçe seçiniz</option></select>
+       
     </div>
     <div>
-        İlçe ismi : @Html.TextBoxFor(x => x.District.Name)
+        İlçe ismi : @Html.TextBoxFor(x => x.District.Name,new { @class="form-control"})
     </div>
     <div>
         <button class="btn btn-primary">Ekle</button>
@@ -42,8 +44,9 @@
             var ddlStates = $(this);
             var stateID = ddlStates.val();
 
-            if (stateID != "" || stateID != "-1") {
-                $("#District_CityID option").remove();
+            if (stateID) {
+                
+                $("#District_CityID option").not(":first").remove();
                 $.ajax({
                     method: "Get",
                     url: "http://localhost:54163/District/GetCityByState/" + stateID,
@@ -52,10 +55,18 @@
                         $("#District_CityID").append('<option value="' + data.ID + '" > ' + data.Name + '  </option>')
                     })
                 })
+                $("#District_CityID").prop('disabled', false);
+               
             }
             else {
                 $("#District_CityID option").not(":first").remove();
+                $("#District_CityID").prop('disabled', true);
+                
+               
+              
             }
+
+            
         })
     
     })

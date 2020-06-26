@@ -22,11 +22,11 @@
         </div>
 
         <div>
-            İlçe seciniz: <select   id="District_CityID" class="form-control"> </select>
+            İlçe seciniz: <select   id="District_CityID" class="form-control" disabled><option value="0">Lütfen ilçe seçiniz</option> </select>
         </div>
 
         <div>
-            Mahalle seciniz: <select name="Address.DistrictID" id="Address_DistrictID" class="form-control"> </select>
+            Mahalle seciniz: <select name="Address.DistrictID" id="Address_DistrictID" class="form-control" disabled><option>Lütfen mahalle seçiniz </option> </select>
         </div>
 
         <div>
@@ -62,8 +62,8 @@
             var ddlStates = $(this);
             var stateID = ddlStates.val();
 
-            if (stateID != "" || stateID != "-1") {
-                $("#District_CityID option").remove();
+            if (stateID) {
+                $("#District_CityID option").not(":first").remove();
                 $.ajax({
                     method: "Get",
                     url: "http://localhost:54163/District/GetCityByState/" + stateID,
@@ -71,12 +71,17 @@
                     $.each(result, function (key, data) {
                         $("#District_CityID").append('<option value="' + data.ID + '" > ' + data.Name + '  </option>');
                     })
+                    $("#District_CityID").prop('disabled', false);
                     $("#District_CityID").change();
+                    
+
                    
                 })
             }
             else {
                 $("#District_CityID option").not(":first").remove();
+                $("#District_CityID").prop('disabled', true);
+                DistrictClear();
             }
         })
 
@@ -85,8 +90,9 @@
             var ddlCities = $(this);
             var cityID = ddlCities.val();
 
-            if (cityID != "" || cityID != "-1") {
-                $("#Address_DistrictID option").remove();
+            if (cityID != 0) {
+                
+                $("#Address_DistrictID option").not(":first").remove();
                 $.ajax({
                     method: "Get",
                     url: "http://localhost:54163/Address/GetDistrictByCity/" + cityID,
@@ -96,16 +102,20 @@
                         $("#Address_DistrictID").append('<option value="' + data.ID + '">' + data.Name + ' </option>');
                     })
 
-                   
+                    $("#Address_DistrictID").prop('disabled', false);
+                    
                 })
             }
             else {
-                $("#Address_DistrictID option").not(":first").remove();
+                DistrictClear();
             }
         })
 
 
-       
+        function DistrictClear() {
+            $("#Address_DistrictID option").not(":first").remove();
+            $("#Address_DistrictID").prop('disabled', true);
+        }
 
 
     })
